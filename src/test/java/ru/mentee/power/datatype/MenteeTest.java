@@ -1,4 +1,4 @@
-package datatype;
+package ru.mentee.power.datatype;
 
 import org.junit.jupiter.api.Test;
 import ru.mentee.power.datatype.Mentee;
