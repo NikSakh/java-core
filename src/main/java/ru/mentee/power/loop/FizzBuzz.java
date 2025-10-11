@@ -1,6 +1,12 @@
 package ru.mentee.power.loop;
 
+import java.util.stream.IntStream;
+
 public class FizzBuzz {
+
+    private static final int FIZZ_NUMBER = 3;
+    private static final int BUZZ_NUMBER = 5;
+    private static final int FIZZBUZZ_NUMBER = 15;
 
     /**
      * Метод возвращает строковое представление чисел от 1 до n по правилам FizzBuzz
@@ -9,19 +15,19 @@ public class FizzBuzz {
      * @return массив строк с результатами
      */
     public String[] generateFizzBuzz(int n) {
-        String[] result = new String[n];
-        for (int index = 1; index <= n; index++) {
-            if (index % 3 == 0 && index % 5 == 0) {
-                result[index-1] = "FizzBuzz";
-            } else if (index % 3 == 0) {
-                result[index-1] = "Fizz";
-            } else if (index % 5 == 0) {
-                result[index-1] = "Buzz";
-            } else {
-                result[index-1] = String.valueOf(index);
-            }
-        }
-        return result;
+        return IntStream.rangeClosed(1, n)
+                .mapToObj(i -> {
+                    if (i % FIZZBUZZ_NUMBER == 0) {
+                        return "FizzBuzz";
+                    } else if (i % FIZZ_NUMBER == 0) {
+                        return "Fizz";
+                    } else if (i % BUZZ_NUMBER == 0) {
+                        return "Buzz";
+                    } else {
+                        return String.valueOf(i);
+                    }
+                })
+                .toArray(String[]::new);
     }
 
     /**
@@ -39,6 +45,6 @@ public class FizzBuzz {
     public static void main(String[] args) {
         FizzBuzz fizzBuzz = new FizzBuzz();
         System.out.println("FizzBuzz для чисел от 1 до 15:");
-        fizzBuzz.printFizzBuzz(30);
+        fizzBuzz.printFizzBuzz(15);
     }
 }
