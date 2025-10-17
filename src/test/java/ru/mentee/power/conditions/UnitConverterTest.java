@@ -8,12 +8,13 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UnitConverterTest {
 
     private UnitConverter converter;
-    private static final double DELTA = 0.001; // Допустимая погрешность
-    private static final double ERROR = -1.0;  // Код ошибки
+    private static final double DELTA = 0.001;
+    private static final double ERROR = -1.0;
 
     @BeforeEach
     void setUp() {
@@ -23,95 +24,70 @@ class UnitConverterTest {
     @Test
     @DisplayName("Конвертация из метров в сантиметры")
     void convertMetresToCentimetres() {
-        // Arrange
         double value = 1.0;
         String fromUnit = "Метр";
         String toUnit = "Сантиметр";
 
-        // Act
         double convertedValue = converter.convert(value, fromUnit, toUnit);
 
-        // Assert
-        // Исправлено: в 1 метре содержится 100 сантиметров
         assertThat(convertedValue).isCloseTo(100.0, within(DELTA));
     }
 
     @Test
     @DisplayName("Конвертация из сантиметров в метры")
     void convertCentimetresToMetres() {
-        // Arrange
+
         double value = 150.0;
         String fromUnit = "Сантиметр";
         String toUnit = "Метр";
 
-        // Act
         double convertedValue = converter.convert(value, fromUnit, toUnit);
 
-        // Assert
-        // Исправлено: 150 см = 1.5 м
         assertThat(convertedValue).isCloseTo(1.5, within(DELTA));
     }
 
     @Test
     @DisplayName("Конвертация из метров в футы")
     void convertMetresToFeet() {
-        // Arrange
         double value = 2.0;
         String fromUnit = "Метр";
         String toUnit = "Фут";
-
-        // Act
         double convertedValue = converter.convert(value, fromUnit, toUnit);
 
-        // Assert
-        // Исправлено: 1 метр = 3.28 футов, поэтому 2 метра = 6.56 футов
         assertThat(convertedValue).isCloseTo(6.56, within(DELTA));
     }
 
     @Test
     @DisplayName("Конвертация из килограммов в граммы")
     void convertKilogramsToGrams() {
-        // Arrange
         double value = 2.5;
         String fromUnit = "Килограмм";
         String toUnit = "Грамм";
-
-        // Act
         double convertedValue = converter.convert(value, fromUnit, toUnit);
 
-        // Assert
         assertThat(convertedValue).isCloseTo(2500.0, within(DELTA));
     }
 
     @Test
     @DisplayName("Конвертация из фунтов в унции")
     void convertPoundsToOunces() {
-        // Arrange
         double value = 1.0; // 1 фунт
         String fromUnit = "Фунт";
         String toUnit = "Унция";
-
-        // Act
         double convertedValue = converter.convert(value, fromUnit, toUnit);
 
-        // Assert
-        // Исправлено: 1 фунт = примерно 16 унций (1 / 2.20462 * 35.274 ≈ 16)
         assertThat(convertedValue).isCloseTo(16.0, within(0.1)); // Увеличиваем погрешность из-за приблизительного значения
     }
 
     @Test
     @DisplayName("Конвертация из Цельсия в Фаренгейт")
     void convertCelsiusToFahrenheit() {
-        // Arrange
         double value = 25.0;
         String fromUnit = "Цельсий";
         String toUnit = "Фаренгейт";
 
-        // Act
         double convertedValue = converter.convert(value, fromUnit, toUnit);
 
-        // Assert
-        // Исправлено: (25 × 9/5) + 32 = 77.0
         double expectedValue = (25.0 * 9.0 / 5.0) + 32.0;
         assertThat(convertedValue).isCloseTo(expectedValue, within(DELTA));
     }
@@ -119,64 +95,58 @@ class UnitConverterTest {
     @Test
     @DisplayName("Конвертация из Фаренгейта в Кельвин")
     void convertFahrenheitToKelvin() {
-        // Arrange
         double value = 32.0; // 32°F = 0°C = 273.15K
         String fromUnit = "Фаренгейт";
         String toUnit = "Кельвин";
-
-        // Act
         double convertedValue = converter.convert(value, fromUnit, toUnit);
 
-        // Assert
-        // Исправлено: 32°F = 273.15K
         assertThat(convertedValue).isCloseTo(273.15, within(DELTA));
     }
 
     @Test
     @DisplayName("Обработка несовместимых единиц измерения")
     void handleIncompatibleUnits() {
-        // Arrange
         double value = 10.0;
         String fromUnit = "Метр";
         String toUnit = "Килограмм";
 
-        // Act
         double result = converter.convert(value, fromUnit, toUnit);
 
-        // Assert
-        // Исправлено: при несовместимых единицах измерения метод должен возвращать ERROR
         assertThat(result).isEqualTo(ERROR);
     }
 
     @Test
     @DisplayName("Обработка неподдерживаемых единиц измерения (fromUnit)")
     void handleUnsupportedFromUnit() {
-        // Arrange
         double value = 10.0;
         String fromUnit = "Миля"; // Неподдерживаемая единица
         String toUnit = "Метр";
 
-        // Act
         double result = converter.convert(value, fromUnit, toUnit);
 
-        // Assert
-        // Исправлено: при неподдерживаемой единице измерения метод должен возвращать ERROR
         assertThat(result).isEqualTo(ERROR);
     }
 
     @Test
     @DisplayName("Обработка неподдерживаемых единиц измерения (toUnit)")
     void handleUnsupportedToUnit() {
-        // Arrange
         double value = 10.0;
         String fromUnit = "Метр";
-        String toUnit = "Ярд"; // Неподдерживаемая единица
+        String toUnit = "Ярд";
 
-        // Act
         double result = converter.convert(value, fromUnit, toUnit);
 
-        // Assert
         assertThat(result).isEqualTo(ERROR);
+    }
+
+    @Test
+    @DisplayName("Обработка null в fromUnit")
+    void handleNullFromUnit() {
+        double value = 10.0;
+        String fromUnit = null;
+        String toUnit = "Метр";
+
+        assertThrows(NullPointerException.class, () -> converter.convert(value, fromUnit, toUnit));
     }
 
     @ParameterizedTest
